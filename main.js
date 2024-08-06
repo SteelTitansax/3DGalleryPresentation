@@ -101,7 +101,7 @@ const ceilingMaterial = new THREE.MeshBasicMaterial({
 
 const ceilingPlane = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
 ceilingPlane.rotation.x = Math.PI / 2; // Rotate the plane 90 degrees
-ceilingPlane.position.y = 12; // Move the plane up
+ceilingPlane.position.y = 11; // Move the plane up
 scene.add(ceilingPlane); // Add the ceiling to the scene
 
 // Handle keydown events
