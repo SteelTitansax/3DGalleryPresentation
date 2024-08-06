@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three-stdlib';
-console.log(THREE);
 
 // Create a new scene
 const scene = new THREE.Scene();
@@ -53,7 +52,7 @@ const planeMaterial = new THREE.MeshBasicMaterial({
 
 const floorPlane = new THREE.Mesh(planeGeometry, planeMaterial); // Floor mesh creation
 floorPlane.rotation.x = Math.PI / 2; // Rotate the plane 90 degrees
-floorPlane.position.y = -Math.PI; // Move the plane down
+floorPlane.position.y = -0.5; // Move the plane down
 scene.add(floorPlane); // Add the mesh to the scene
 
 // Create the walls
@@ -80,7 +79,7 @@ wallGroup.add(leftWall);
 // Right wall
 const rightWall = new THREE.Mesh(
     new THREE.BoxGeometry(50, 20, 0.001),
-    new THREE.MeshBasicMaterial({ color: 'yellow' })
+    new THREE.MeshBasicMaterial({ color: 'grey' })
 ); // Right wall mesh creation
 rightWall.rotation.y = Math.PI / 2; // Rotate the wall 90 degrees
 rightWall.position.x = 20; // Move the wall to the right
@@ -103,6 +102,23 @@ const ceilingPlane = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
 ceilingPlane.rotation.x = Math.PI / 2; // Rotate the plane 90 degrees
 ceilingPlane.position.y = 11; // Move the plane up
 scene.add(ceilingPlane); // Add the ceiling to the scene
+
+// Function to create a painting
+function createPainting(imageURL, width, height, position) {
+    const textureLoader = new THREE.TextureLoader();
+    const paintingTexture = textureLoader.load(imageURL);
+    const paintingMaterial = new THREE.MeshBasicMaterial({ map: paintingTexture });
+    const paintingGeometry = new THREE.PlaneGeometry(width, height);
+    const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
+    painting.position.set(position.x, position.y, position.z);
+    return painting;
+}
+
+// Create paintings
+const painting1 = createPainting('artworks/0.jpg', 10, 5, new THREE.Vector3(0, 5, -19.9));
+const painting2 = createPainting('artworks/1.jpg', 10, 5, new THREE.Vector3(12, 5, -19.9));
+
+scene.add(painting1, painting2);
 
 // Handle keydown events
 function onKeyDown(event) {
