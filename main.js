@@ -1,148 +1,47 @@
-import * as THREE from 'three';
-import { PointerLockControls } from 'three-stdlib';
+import * as THREE from "three";
+import { scene, setupScene } from "./modules/scene.js";
+import { createPaintings } from "./modules/paintings.js";
+import { createWalls } from "./modules/walls.js";
+import { setupLighting } from "./modules/lighting.js";
+import { setupFloor } from "./modules/floor.js";
+import { createCeiling } from "./modules/ceiling.js";
+import { createBoundingBoxes } from "./modules/boundingBox.js";
+import { setupRendering } from "./modules/rendering.js";
+import { setupEventListeners } from "./modules/eventListeners.js";
+import { addObjectsToScene } from "./modules/sceneHelpers.js";
+import { setupPlayButton } from "./modules/menu.js";
+import { clickHandling } from "./modules/clickHandling.js";
+import { loadStatueModel } from "./modules/statue.js";
+import { loadBenchModel } from "./modules/bench.js";
+import { loadCeilingLampModel } from "./modules/ceilingLamp.js";
 
-// Create a new scene
-const scene = new THREE.Scene();
+let { camera, controls, renderer } = setupScene();
 
-// Create a camera
-const camera = new THREE.PerspectiveCamera(
-    75, // Field of view in degrees
-    window.innerWidth / window.innerHeight, // Aspect ratio
-    0.1, // near the camera
-    1000 // far from the camera
-);
-scene.add(camera);
-camera.position.z = 5; // Move the camera back 5 units
 
-// Create a renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true }); // For smooth edges
-renderer.setSize(window.innerWidth, window.innerHeight); // Set the size of the renderer
-renderer.setClearColor(0xffffff, 1); // Background color of the renderer
-document.body.appendChild(renderer.domElement); // Add the renderer to the HTML document
-
-// Create Light
-// Ambient Light
-const ambientLight = new THREE.AmbientLight(0x101010, 1.0); // Color, intensity
-scene.add(ambientLight);
-
-// Directional Light
-const sunLight = new THREE.DirectionalLight(0xdddddd, 1.0); // Color, intensity
-sunLight.position.set(0, 15, 0); // Position of the light
-scene.add(sunLight);
-
-// Create a cube
-const geometry = new THREE.BoxGeometry(1, 1, 1); // Box geometry
-const material = new THREE.MeshBasicMaterial({ color: 'blue' }); // Material
-const cube = new THREE.Mesh(geometry, material); // Mesh
-scene.add(cube); // Add the mesh to the scene
-
-// Event listeners for when we press the keys
-document.addEventListener('keydown', onKeyDown, false);
-
-// Texture of the floor
 const textureLoader = new THREE.TextureLoader();
-const floorTexture = textureLoader.load('img/Floor.jpg'); // Load the texture
 
-// Create the floor plane
-const planeGeometry = new THREE.PlaneGeometry(50, 50); // Plane geometry
-const planeMaterial = new THREE.MeshBasicMaterial({
-    map: floorTexture,
-    side: THREE.DoubleSide,
-}); // Material creation
+const walls = createWalls(scene, textureLoader);
+const floor = setupFloor(scene);
+const ceiling = createCeiling(scene, textureLoader);
+const paintings = createPaintings(scene, textureLoader);
+const lighting = setupLighting(scene, paintings);
 
-const floorPlane = new THREE.Mesh(planeGeometry, planeMaterial); // Floor mesh creation
-floorPlane.rotation.x = Math.PI / 2; // Rotate the plane 90 degrees
-floorPlane.position.y = -0.5; // Move the plane down
-scene.add(floorPlane); // Add the mesh to the scene
+createBoundingBoxes(walls);
+createBoundingBoxes(paintings);
 
-// Create the walls
-const wallGroup = new THREE.Group(); // Create a group to hold the walls
-scene.add(wallGroup); // Add the group to the scene
+addObjectsToScene(scene, paintings);
 
-// Front wall
-const frontWall = new THREE.Mesh(
-    new THREE.BoxGeometry(50, 20, 0.001),
-    new THREE.MeshBasicMaterial({ color: 'green' })
-); // Front wall mesh creation
-frontWall.position.z = -20;
-wallGroup.add(frontWall);
+setupPlayButton(controls);
 
-// Left wall
-const leftWall = new THREE.Mesh(
-    new THREE.BoxGeometry(50, 20, 0.001),
-    new THREE.MeshBasicMaterial({ color: 'red' })
-); // Left wall mesh creation
-leftWall.rotation.y = Math.PI / 2; // Rotate the wall 90 degrees
-leftWall.position.x = -20; // Move the wall to the left
-wallGroup.add(leftWall);
+setupEventListeners(controls);
 
-// Right wall
-const rightWall = new THREE.Mesh(
-    new THREE.BoxGeometry(50, 20, 0.001),
-    new THREE.MeshBasicMaterial({ color: 'grey' })
-); // Right wall mesh creation
-rightWall.rotation.y = Math.PI / 2; // Rotate the wall 90 degrees
-rightWall.position.x = 20; // Move the wall to the right
-wallGroup.add(rightWall);
+clickHandling(renderer, camera, paintings);
 
-// Loop through each wall and create the bounding box
-for (let i = 0; i < wallGroup.children.length; i++) {
-    wallGroup.children[i].BBox = new THREE.Box3();
-    wallGroup.children[i].BBox.setFromObject(wallGroup.children[i]);
-}
+setupRendering(scene, camera, renderer, paintings, controls, walls);
 
-// Create the ceiling
-const ceilingGeometry = new THREE.PlaneGeometry(50, 50); // Ceiling geometry creation
-const ceilingMaterial = new THREE.MeshBasicMaterial({
-    color: 'blue',
-    side: THREE.DoubleSide,
-}); // Ceiling material creation
+loadStatueModel(scene);
 
-const ceilingPlane = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-ceilingPlane.rotation.x = Math.PI / 2; // Rotate the plane 90 degrees
-ceilingPlane.position.y = 11; // Move the plane up
-scene.add(ceilingPlane); // Add the ceiling to the scene
+loadBenchModel(scene);
 
-// Function to create a painting
-function createPainting(imageURL, width, height, position) {
-    const textureLoader = new THREE.TextureLoader();
-    const paintingTexture = textureLoader.load(imageURL);
-    const paintingMaterial = new THREE.MeshBasicMaterial({ map: paintingTexture });
-    const paintingGeometry = new THREE.PlaneGeometry(width, height);
-    const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
-    painting.position.set(position.x, position.y, position.z);
-    return painting;
-}
+loadCeilingLampModel(scene);
 
-// Create paintings
-const painting1 = createPainting('artworks/0.jpg', 10, 5, new THREE.Vector3(0, 5, -19.9));
-const painting2 = createPainting('artworks/1.jpg', 10, 5, new THREE.Vector3(12, 5, -19.9));
-
-scene.add(painting1, painting2);
-
-// Handle keydown events
-function onKeyDown(event) {
-    let keycode = event.which;
-    if (keycode == 37) {
-        camera.translateX(-0.05);
-    } else if (keycode == 39) {
-        camera.translateX(0.05);
-    } else if (keycode == 40) {
-        camera.translateY(-0.05);
-    } else if (keycode == 38) {
-        camera.translateY(0.05);
-    }
-}
-
-// Render loop
-let render = function () {
-    cube.rotation.x += 0.01; // Rotate the cube
-    cube.rotation.y += 0.01; // Rotate the cube
-    renderer.render(scene, camera); // Render the scene
-    requestAnimationFrame(render);
-};
-
-render(); // Call the render function
-
-// Initial render
-renderer.render(scene, camera);

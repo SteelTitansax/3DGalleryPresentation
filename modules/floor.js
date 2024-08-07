@@ -31,10 +31,6 @@ export const setupFloor = (scene) => {
   const planeGeometry = new THREE.PlaneGeometry(45, 45);
   const planeMaterial = new THREE.MeshStandardMaterial({
     map: colorTexture,
-    displacementMap: displacementTexture,
-    normalMap: normalTexture,
-    roughnessMap: roughnessTexture,
-    aoMap: aoTexture,
     displacementScale: 0.1,
     side: THREE.DoubleSide,
   });
