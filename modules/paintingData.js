@@ -14,13 +14,11 @@ export const paintingData = [
     position: { x: -15 + 10 * i, y: 2, z: -19.5 }, // position of the painting
     rotationY: 0, // rotation of the painting
     info: {
-      title: `Van Gogh ${i + 5}`,
-      artist: 'Vincent van Gogh',
-      description: `Artwork ${
-        i + 5
-      } by Vincent van Gogh is an exceptional piece showcasing his remarkable ability to capture emotion and atmosphere.`,
-      year: `Year ${i + 5}`,
-      link: 'https://github.com/theringsofsaturn',
+      title: frontWallTitles[i], // title of the painting
+      artist: frontWallAuthor[i], // author of the project
+      description: frontWallDescription[i], // description of the project
+      year: frontWallYear[i], // year of the project
+      link: frontWallLink[i], // link to the project
     },
   })) /*,
   // Back Wall
