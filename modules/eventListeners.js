@@ -1,6 +1,5 @@
 import { keysPressed } from "./movement.js"; // import the keysPressed object
 import { showMenu, hideMenu } from "./menu.js"; // import the showMenu function
-import { startAudio, stopAudio } from "./audioGuide.js";
 
 let lockPointer = true;
 let showMenuOnUnlock = false;
@@ -26,9 +25,7 @@ export const setupEventListeners = (controls, camera, scene) => {
     showMenuOnUnlock = false;
   });
 
-  // Add event listeners for the audio guide buttons
-  document.getElementById("start_audio").addEventListener("click", startAudio);
-  document.getElementById("stop_audio").addEventListener("click", stopAudio);
+
 };
 
 // toggle the pointer lock

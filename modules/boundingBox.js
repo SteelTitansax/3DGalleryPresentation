@@ -13,10 +13,6 @@ export const createBoundingBoxes = (objects) => {
   });
 };
 
-// Note: Without the checking won't work!
-// if (!Array.isArray(objects)) {
-//     objects = objects.children;
-//   }
 
 // Checking for both THREE.Group and arrays is because the `createWalls` function is returning a THREE.Group while `createPaintings` is returning an array.
 
